@@ -22,9 +22,11 @@ class ForgeDownloader(QWidget):
         self.initUI()
 
     def initUI(self):
-        MCversionList = ['1.11', '1.11.2', '1.12', '1.12.1', '1.12.2', '1.13.2', '1.14.2', '1.14.3', '1.14.4', '1.15',
-                         '1.15.1', '1.15.2', '1.16.1',  # 1.1~1.10.2버전은 파일명 달라서 지금은 지원 안됨.(추가 예정)
-                         '1.16.2', '1.16.3', '1.16.4', '1.16.5', '1.17.1']  # 포지 버전 선택 콤보 박스에 있는 버전 리스트
+        MCversionList = ['1.1', '1.2.3', '1.2.4', '1.2.5', '1.3.2', '1.4.0', '1.4.1', '1.4.2', '1.4.3', '1.4.4',
+                         '1.4.5', '1.4.6', '1.4.7', '1.5', '1.5.1', '1.5.2', '1.6.1', '1.6.2', '1.6.3', '1.6.4',
+                         '1.7.2', '1.7.10', '1.7.10_pre4', '1.8', '1.8.8', '1.8.9', '1.9', '1.9.4', '1.10', '1.10.2',
+                         '1.11', '1.11.2', '1.12', '1.12.1', '1.12.2', '1.13.2', '1.14.2', '1.14.3', '1.14.4', '1.15',
+                         '1.15.1', '1.15.2', '1.16.1','1.16.2', '1.16.3', '1.16.4', '1.16.5', '1.17.1']
         MCversionLabel = QLabel('Minecraft Version', self)
         MCversionLabel.move(50, 50)
         version = QComboBox(self)
@@ -42,7 +44,6 @@ class ForgeDownloader(QWidget):
 
         deleteFile.stateChanged.connect(lambda: setDeleteFileBool(deleteFile))
         downloadButton.clicked.connect(lambda: self.download(version.currentText()))
-        # TypeError: argument 1 has unexpected type 'NoneType'에러나서 람다식으로 실행시킴. https://appia.tistory.com/276 참고
         self.setWindowTitle('ForgeMDKDownloader')
         self.move(300, 300)
         self.resize(300, 210)
@@ -79,11 +80,22 @@ class ForgeDownloader(QWidget):
             html = html.replace('                                            ', '')
             html = html.split('<div class="link">')[2]
             html = html.split('" title="Mdk">')[0]
-            html = html.split('href="')[1]
             url = html.split('&url=')[1]
         elif version == '1.11':
             html = html.split('<div class="link">')[3]
             html = html.split('" title="Mdk"')[0]
+            url = html.split('&url=')[1]
+        elif version in ['1.10.2', '1.9.4']:
+            html = html.split('<div class="links">')[1]
+            html = html.replace('                                            ', '')
+            html = html.split('<div class="link">')[2]
+            html = html.split('" title="Mdk">')[0]
+            url = html.split('&url=')[1]
+        elif version in ['1.10', '1.9']:
+            html = html.split('<div class="links">')[1]
+            html = html.replace('                                            ', '')
+            html = html.split('<div class="link">')[3]
+            html = html.split('" title="Mdk">')[0]
             url = html.split('&url=')[1]
         print(url)
         urlretrieve(url, './forge-{}-mdk.zip'.format(version))
